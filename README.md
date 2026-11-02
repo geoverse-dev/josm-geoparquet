@@ -1,77 +1,143 @@
 # JOSM GeoParquet
 
-Experimental, read-only local GeoParquet visualization plugin for JOSM, powered by [Parquetry](https://github.com/tileverse-io/parquetry).
+A **working, read-only GeoParquet reference-layer plugin for JOSM**, powered by [Parquetry](https://github.com/tileverse-io/parquetry).
 
-**Status: initial proof of concept. Not yet compiled or runtime-tested against JOSM.**
+Load GeoParquet files from your local filesystem or directly from an HTTP(S) object endpoint, including GeoParquet published in a public S3 bucket or compatible object storage. Display the geometries alongside editable OpenStreetMap data without importing them as OSM objects.
 
-## Scope
+## Status
 
-- Open local `.parquet` / `.geoparquet` files through **File → Open**.
-- Decode WKB geometry from a column named `geometry` using Parquetry `ParquetFileReader`.
-- Draw points, lines, polygons, multi-geometries, and collections in a **dedicated reference layer**.
-- No OSM primitive creation, editing, upload, remote access, conflation, or file modification.
-- Import up to 100,000 geometries by default; reject larger files rather than silently truncating.
+**Version 0.2 — Functionally validated in JOSM.**
+
+The plugin has been built, installed, and exercised in JOSM by the project maintainer. Confirmed workflows include:
+
+- Opening and displaying local GeoParquet datasets.
+- Displaying Overture Maps transportation geometries alongside OSM data.
+- Reading a GeoParquet object published in S3 through its HTTPS endpoint.
+- Using the current JOSM viewport as the spatial query for remote loading.
+- Configuring geometry-count limits and customizing reference-layer appearance.
+
+These are manual end-to-end validations, **not** a claim of comprehensive automated test coverage, compatibility with every GeoParquet file, or production hardening.
+
+## Features
+
+### Local GeoParquet
+
+Use **File → Open…** and select a `.parquet` or `.geoparquet` file. The plugin decodes WKB geometries using Parquetry and displays them in a separate reference layer.
+
+Supported geometry rendering includes points, lines, polygons, multi-geometries, and geometry collections. The current reader expects a top-level WKB column named `geometry` and longitude/latitude coordinates in EPSG:4326.
+
+### Remote GeoParquet (S3 and HTTP-compatible storage)
+
+1. Navigate JOSM to the area you want to inspect.
+2. Select **File → Open remote GeoParquet URL…**, located near **Open…**.
+3. Enter the HTTPS URL of a **single GeoParquet object**.
+4. The plugin uses HTTP byte-range requests and a spatial filter based on the current viewport.
+5. A read-only reference layer is added to JOSM.
+
+For S3, provide the object's accessible **HTTPS URL**, not an `s3://` URI. Public endpoints and presigned HTTPS URLs are supported when the server implements HTTP Range (`206 Partial Content` and a valid `Content-Range`).
+
+**After panning or zooming**, right-click the remote layer and select **Reload GeoParquet for current viewport** to fetch data for the new visible area. Viewport refresh is **manual** in this version.
+
+The reader does not intentionally download the entire object. Actual network I/O and spatial pruning depend on the GeoParquet file's row-group/page organization and spatial metadata; an unoptimized file can still require substantial reads.
+
+### Configurable geometry limits
+
+Select **File → GeoParquet import settings…**, located near the bottom of the File menu before Exit.
+
+- Set the maximum number of geometries to import.
+- Use `0` to disable the count limit.
+- Configure whether to keep a partial layer when the limit is reached.
+
+The count limit is a safety control, not a memory quota. Unlimited imports or large geometry objects can exhaust the JVM heap.
+
+### Per-layer appearance
+
+Right-click a GeoParquet reference layer and select **GeoParquet style…** to adjust:
+
+- Color
+- Stroke width
+- Opacity
+- Point size
+
+Styles are associated with each layer in memory; they are not currently persisted between JOSM sessions. Styling affects only rendering, not source geometries or OSM data.
+
+### Read-only by design
+
+GeoParquet content is displayed as a **reference layer**, not as an `OsmDataLayer`. The plugin does not create editable OSM primitives, perform conflation, modify the source GeoParquet, or upload reference geometries to OpenStreetMap.
 
 ## Requirements
 
-- **JDK 25** and `--enable-preview` at runtime (required by Parquetry).
-- **Maven 3.9+**, `make`, and `curl`.
-- Parquetry `1.0-SNAPSHOT` available in local Maven cache or configured snapshot repository.
-- A JOSM tested JAR for compilation.
+- **JDK 25** (Parquetry uses Java preview features).
+- **Maven 3.9+**, Git, curl, and make.
+- JOSM tested JAR (downloaded by the bootstrap target).
+- Parquetry `1.0-SNAPSHOT` (built locally by the bootstrap target).
 
-## Build
-
-Requirements: JDK 25 (including `JAVA_HOME`), Git, curl, and Maven. Parquetry's Maven wrapper is used to install its snapshot dependencies locally.
+## Build and run
 
 ```bash
-java -version                 # Must report Java 25
-mvn -version                  # Must use Java 25
-make bootstrap                # Downloads JOSM; clones and builds Parquetry locally
-make build                    # Creates target/geoparquet.jar
-make inspect                  # Check manifest metadata
+java -version
+mvn -version
+
+make bootstrap   # First-time setup: download JOSM and build Parquetry
+make build       # Build target/geoparquet.jar
+make install     # Install plugin into JOSM's plugin directory
+make run         # Launch JOSM with required JVM flags
 ```
 
-`make bootstrap` reuses `.cache/josm-tested.jar` and `.cache/parquetry` on subsequent runs, but reruns the Parquetry Maven install. Override `PARQUETRY_DIR` to use an existing Parquetry checkout. The bootstrap requires network access the first time.
-
-## Install (Linux)
+`make bootstrap` is normally only needed once. After changing the plugin's source code, use:
 
 ```bash
 make install
+make run
 ```
 
-By default this copies `target/geoparquet.jar` to `~/.local/share/JOSM/plugins/geoparquet.jar`.
-To override: `make install JOSM_PLUGINS_DIR=/custom/JOSM/plugins`.
+On Linux, the default installation destination is:
 
-**Start JOSM with preview features enabled**, e.g.:
-
-```bash
-java --enable-preview -jar .cache/josm-tested.jar
+```text
+~/.local/share/JOSM/plugins/geoparquet.jar
 ```
 
-Ensure the `geoparquet` plugin is enabled in JOSM preferences; restart JOSM after installing.
+Override with `make install JOSM_PLUGINS_DIR=/custom/JOSM/plugins` if necessary.
 
-## Manual smoke test
+The `make run` target includes `--enable-preview` and the additional JVM exports required for this JOSM/Java combination. If you start JOSM another way, provide equivalent JVM options. Ensure the plugin is enabled in JOSM preferences.
 
-1. Launch JOSM with JDK 25 and `--enable-preview`.
-2. Choose **File → Open**.
-3. Select a small local GeoParquet file with EPSG:4326 WKB `geometry` column.
-4. Confirm that a separate layer named after the file appears.
-5. Zoom to the layer and confirm its shapes render over the OSM background.
-6. Confirm that the layer cannot be edited, merged into OSM data, saved as OSM data, or uploaded.
-7. Try an invalid `.parquet` file; confirm an error and no partial layer.
+## Quick verification
+
+**Local:** Open a small GeoParquet with a WKB `geometry` column, confirm that its geometries appear in a dedicated layer, and change its color through the layer context menu.
+
+**Remote:** Navigate to an area covered by a GeoParquet hosted on an HTTP Range-capable S3 endpoint, open its HTTPS URL, verify the reference geometries, pan to a nearby area, and use **Reload GeoParquet for current viewport**.
+
+**Safety:** Confirm that GeoParquet geometries are not editable OSM primitives and are not included in OSM uploads.
 
 ## Current limitations
 
-- **Only** WKB in a top-level column named `geometry` is supported.
-- Coordinates are assumed to be longitude/latitude **EPSG:4326**. Files using other CRSs must be rejected or reprojected in a future iteration; currently they may render incorrectly. **Do not use this PoC for positional validation of unknown-CRS data.**
-- No BBOX pushdown yet, no metadata-driven geometry selection, no remote access, no styling or attribute inspector.
-- A memory cap on feature count is not a byte cap; use small local files initially.
-- JOSM and Parquetry APIs may change; compilation/runtime verification is pending.
+- Geometry column is currently expected to be named `geometry` and encoded as WKB.
+- Coordinates are assumed to be **EPSG:4326**; automatic CRS discovery/reprojection is not implemented. Unknown-CRS files may render in the wrong location.
+- Remote import supports a **single HTTP(S) object** with working byte-range support, not `s3://` URIs, directory/prefix datasets, or wildcard collections.
+- AWS credential providers and SigV4 signing are not implemented. Use a public or appropriately presigned HTTPS URL; treat presigned URLs as sensitive.
+- Remote viewport refresh is manual; no automatic map-movement listener, request cancellation, or persistent spatial cache yet.
+- Styles are per layer and not persisted; attribute-based styling and an attribute inspector are not implemented.
+- Large files may still require substantial I/O and heap, even with a viewport filter; spatial pruning depends on file layout and metadata.
+- Automated integration tests, broader format compatibility, and production-scale performance evaluation remain future work.
 
-## Architecture
+## Architecture and documentation
 
-`GeoParquetPlugin` registers `GeoParquetImporter` with JOSM. `GeoParquetReader` reads WKB using Parquetry. `GeoParquetReferenceLayer` paints geometry directly without producing `OsmDataLayer`.
+- `GeoParquetPlugin` registers JOSM menu actions and the local importer.
+- `GeoParquetImporter` handles local file selection.
+- `GeoParquetReader` decodes GeoParquet geometries using Parquetry.
+- `HttpRangeSource` provides positional HTTP access for remote objects.
+- `GeoParquetReferenceLayer` renders the read-only layer and exposes layer actions.
+- `GeoParquetSettings`, `GeoParquetDialogs`, and `GeoParquetStyle` handle limits and visual configuration.
 
-This plugin has **no dependency on the JOSM OpenData plugin**. A future Overture Maps plugin may reuse its reader and layer APIs.
+The plugin is independent of the JOSM OpenData plugin and may serve as a foundation for future Overture Maps integrations.
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+See [Architecture](docs/ARCHITECTURE.md), [Development](docs/DEVELOPMENT.md), and [Remote access and styling](docs/REMOTE_AND_STYLING.md).
+
+## Roadmap
+
+1. Automatically refresh remote data on viewport changes, with debounce and cancellation.
+2. Cache spatial requests and optimize large-file rendering.
+3. Support GeoParquet metadata-driven geometry column and CRS detection.
+4. Add attribute-based styles and feature inspection.
+5. Support cloud authentication and multi-object datasets.
+6. Expand automated tests and performance benchmarks.
