@@ -1,0 +1,7 @@
+target/
+.cache/
+.idea/
+*.iml
+*.class
+*.jar
+!src/test/resources/*.jar
