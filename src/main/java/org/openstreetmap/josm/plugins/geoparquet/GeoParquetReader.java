@@ -6,6 +6,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntConsumer;
 import io.tileverse.parquetry.data.ParquetFileReader;
 import io.tileverse.parquetry.data.ReadOptions;
 import io.tileverse.parquetry.filter.Bbox;
@@ -38,13 +40,21 @@ public final class GeoParquetReader {
     }
 
     public static Result readRemote(URI uri, Bounds bounds) throws IOException {
+        return readRemote(uri, bounds, ignored -> {}, () -> false);
+    }
+
+    static Result readRemote(URI uri, Bounds bounds, IntConsumer progress, BooleanSupplier cancelled) throws IOException {
         try (ByteRangeSource bytes = new HttpRangeSource(uri)) {
-            return read(bytes, bounds);
+            return read(bytes, bounds, progress, cancelled);
         } catch (IOException e) { throw e; }
         catch (Exception e) { throw new IOException("Remote GeoParquet read failed", e); }
     }
 
     private static Result read(ByteRangeSource bytes, Bounds bounds) throws IOException {
+        return read(bytes, bounds, ignored -> {}, () -> false);
+    }
+
+    private static Result read(ByteRangeSource bytes, Bounds bounds, IntConsumer progress, BooleanSupplier cancelled) throws IOException {
         List<Geometry> geometries = new ArrayList<>();
         WKBReader decoder = new WKBReader();
         int limit = GeoParquetSettings.maxFeatures();
@@ -58,6 +68,8 @@ public final class GeoParquetReader {
             try (Stream<ParquetRecord> rows = source.read(predicate, Projection.ALL, ReadOptions.DEFAULTS)) {
                 var iterator = rows.iterator();
                 while (iterator.hasNext()) {
+                    if (cancelled.getAsBoolean() || Thread.currentThread().isInterrupted())
+                        throw new IOException("GeoParquet import cancelled");
                     ParquetRecord row = iterator.next();
                     if (row.isNull(GEOMETRY)) continue;
                     byte[] wkb = row.getBinary(GEOMETRY);
@@ -71,6 +83,7 @@ public final class GeoParquetReader {
                         break;
                     }
                     geometries.add(geometry);
+                    progress.accept(geometries.size());
                 }
             }
         } catch (IOException e) { throw e; }

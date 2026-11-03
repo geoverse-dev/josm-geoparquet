@@ -21,3 +21,9 @@ Remote imports require a single HTTP(S) GeoParquet object with working HTTP Rang
 ## Known limitations
 
 The remote implementation is an initial implementation, not a verified production client. Server-side Range support is mandatory; no fallback to full-file download is attempted. Parquetry predicate pruning effectiveness depends on spatial metadata and layout.
+
+## Plugin integration
+
+The public `GeoParquetImportService` preserves the same Range-based, viewport-filtered
+reader for dependent plugins. It adds asynchronous progress/cancellation and enforces
+the read-only layer boundary; callers do not receive Parquetry or mutable OSM objects.

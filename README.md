@@ -6,7 +6,7 @@ Load GeoParquet files from your local filesystem or directly from an HTTP(S) obj
 
 ## Status
 
-**Version 0.2 — Functionally validated in JOSM.**
+**Version 0.3 — Public cross-plugin import API added; core 0.2 workflows were functionally validated in JOSM.**
 
 The plugin has been built, installed, and exercised in JOSM by the project maintainer. Confirmed workflows include:
 
@@ -17,6 +17,13 @@ The plugin has been built, installed, and exercised in JOSM by the project maint
 - Configuring geometry-count limits and customizing reference-layer appearance.
 
 These are manual end-to-end validations, **not** a claim of comprehensive automated test coverage, compatibility with every GeoParquet file, or production hardening.
+
+### Cross-plugin API
+
+`GeoParquetImportService.loadRemote(...)` is the stable entry point for plugins such as
+`josm-overturemaps`. It accepts an HTTPS URI, layer name, WGS84 viewport, progress
+consumer and cancellation supplier. Reading runs off the Swing event thread; the
+result is registered on that thread as a read-only `GeoParquetReferenceLayer`.
 
 ## Features
 
@@ -127,6 +134,7 @@ The `make run` target includes `--enable-preview` and the additional JVM exports
 - `GeoParquetReader` decodes GeoParquet geometries using Parquetry.
 - `HttpRangeSource` provides positional HTTP access for remote objects.
 - `GeoParquetReferenceLayer` renders the read-only layer and exposes layer actions.
+- `GeoParquetImportService` is the public asynchronous handoff used by other plugins.
 - `GeoParquetSettings`, `GeoParquetDialogs`, and `GeoParquetStyle` handle limits and visual configuration.
 
 The plugin is independent of the JOSM OpenData plugin and may serve as a foundation for future Overture Maps integrations.
