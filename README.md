@@ -106,6 +106,12 @@ On Linux, the default installation destination is:
 
 Override with `make install JOSM_PLUGINS_DIR=/custom/JOSM/plugins` if necessary.
 
+## Releases
+
+Pushing a semantic-version tag such as `v0.3.0` runs GitHub Actions with Java 25,
+tests and packages the plugin, verifies that the manifest version matches the tag,
+and creates a GitHub Release containing `geoparquet-0.3.0.jar` plus its SHA-256 file.
+
 The `make run` target includes `--enable-preview` and the additional JVM exports required for this JOSM/Java combination. If you start JOSM another way, provide equivalent JVM options. Ensure the plugin is enabled in JOSM preferences.
 
 ## Quick verification

@@ -2,7 +2,7 @@
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
  <modelVersion>4.0.0</modelVersion>
  <groupId>org.openstreetmap.josm.plugins</groupId><artifactId>geoparquet</artifactId><version>0.3.0-SNAPSHOT</version>
- <properties><maven.compiler.release>25</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><parquetry.version>1.0-SNAPSHOT</parquetry.version><josm.mainversion>19000</josm.mainversion></properties>
+ <properties><maven.compiler.release>25</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><parquetry.version>1.0-SNAPSHOT</parquetry.version><josm.mainversion>19000</josm.mainversion><plugin.version>0.3.0</plugin.version></properties>
  <dependencies>
   <dependency><groupId>org.openstreetmap.josm</groupId><artifactId>josm</artifactId><version>local</version><scope>system</scope><systemPath>${project.basedir}/.cache/josm-tested.jar</systemPath></dependency>
   <dependency><groupId>io.tileverse.parquetry</groupId><artifactId>parquetry-core</artifactId><version>${parquetry.version}</version></dependency>
@@ -21,7 +21,7 @@
       <manifestEntries>
        <Plugin-Class>org.openstreetmap.josm.plugins.geoparquet.GeoParquetPlugin</Plugin-Class>
        <Plugin-Mainversion>${josm.mainversion}</Plugin-Mainversion>
-       <Plugin-Version>0.3.0</Plugin-Version>
+       <Plugin-Version>${plugin.version}</Plugin-Version>
        <Plugin-Minimum-Java-Version>25</Plugin-Minimum-Java-Version>
        <Plugin-Description>Read-only local and HTTP-range GeoParquet reference layers using Parquetry</Plugin-Description>
        <Author>JOSM GeoParquet contributors</Author>

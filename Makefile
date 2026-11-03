@@ -6,7 +6,7 @@ JOSM_URL ?= https://josm.openstreetmap.de/download/josm-tested.jar
 JOSM_PLUGINS_DIR ?= $(HOME)/.local/share/JOSM/plugins
 PARQUETRY_DIR ?= .cache/parquetry
 PARQUETRY_REPO ?= https://github.com/tileverse-io/parquetry.git
-PARQUETRY_REF ?= main
+PARQUETRY_REF ?= 05e5bad2bd6fc193e29212e8a596f985e408f703
 JAVA ?= java
 MVN ?= mvn
 
@@ -37,11 +37,13 @@ bootstrap-parquetry:
 	@java -version 2>&1 | head -n 1
 	@if [ ! -d "$(PARQUETRY_DIR)/.git" ]; then \
 		mkdir -p "$(dir $(PARQUETRY_DIR))"; \
-		git clone --recurse-submodules "$(PARQUETRY_REPO)" "$(PARQUETRY_DIR)" || exit $$?; \
+		git clone --no-checkout "$(PARQUETRY_REPO)" "$(PARQUETRY_DIR)" || exit $$?; \
 	else \
 		echo "Reusing existing Parquetry checkout: $(PARQUETRY_DIR)"; \
 	fi
 	@cd "$(PARQUETRY_DIR)" && \
+		git fetch --depth 1 origin "$(PARQUETRY_REF)" && \
+		git checkout --detach FETCH_HEAD && \
 		git submodule update --init --recursive && \
 		./mvnw -DskipTests install
 	@echo "Parquetry installed in the local Maven repository."
