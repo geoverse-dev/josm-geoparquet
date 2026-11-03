@@ -52,7 +52,7 @@ jobs:
           [[ "$actual" == "$version" ]] || { echo "Manifest version $actual does not match tag $version" >&2; exit 1; }
           mkdir -p release
           cp target/geoparquet.jar "release/geoparquet-${version}.jar"
-          sha256sum "release/geoparquet-${version}.jar" > "release/geoparquet-${version}.jar.sha256"
+          (cd release && sha256sum "geoparquet-${version}.jar" > "geoparquet-${version}.jar.sha256")
 
       - name: Create GitHub Release
         env:
