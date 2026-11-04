@@ -8,19 +8,21 @@ Layer styling uses a per-layer mutable style object (color, opacity, stroke widt
 
 Remote imports require a single HTTP(S) GeoParquet object with working HTTP Range support and a known Content-Range size. The initial viewport is captured at import time and passed to Parquetry as a spatial predicate. Geometry envelopes are checked after decoding. The current implementation uses a manual context-menu reload after panning.
 
-## Next milestones
+## Further improvements
 
-1. Compile and smoke-test with JDK 25 and the user's JOSM tested JAR.
-2. Add automatic viewport-change listening with debounce, cancellation and stale-result protection.
-3. Introduce spatial indexing and viewport-aware caching; avoid full in-memory scans for rendering.
-4. Support metadata-driven geometry columns and CRS checks, and attribute-driven style rules.
-5. Add remote dataset manifests, cloud authentication and optional signed URL provider.
-6. Improve HTTP client connection pooling, retry/backoff and range caching.
-7. Add unit/integration tests using a local HTTP Range server and a small GeoParquet fixture.
+1. Add automatic viewport-change listening with debounce, cancellation and stale-result protection.
+2. Introduce spatial indexing and viewport-aware caching; avoid full in-memory scans for rendering.
+3. Support metadata-driven geometry columns and CRS checks, and attribute-driven style rules.
+4. Add remote dataset manifests, cloud authentication and optional signed URL provider.
+5. Improve HTTP client connection pooling, retry/backoff and range caching.
+6. Expand integration coverage using a local HTTP Range server and GeoParquet fixtures.
 
 ## Known limitations
 
-The remote implementation is an initial implementation, not a verified production client. Server-side Range support is mandatory; no fallback to full-file download is attempted. Parquetry predicate pruning effectiveness depends on spatial metadata and layout.
+Remote loading is available for single HTTP(S) GeoParquet objects. Server-side Range
+support is mandatory and there is intentionally no fallback to downloading the full
+file. Parquetry predicate-pruning effectiveness depends on spatial metadata and file
+layout; users should apply geometry limits for large or unfamiliar datasets.
 
 ## Plugin integration
 

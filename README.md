@@ -1,5 +1,7 @@
 # JOSM GeoParquet
 
+[Versión en español](README.es.md)
+
 A **working, read-only GeoParquet reference-layer plugin for JOSM**, powered by [Parquetry](https://github.com/tileverse-io/parquetry).
 
 Load GeoParquet files from your local filesystem or directly from an HTTP(S) object endpoint, including GeoParquet published in a public S3 bucket or compatible object storage. Display the geometries alongside editable OpenStreetMap data without importing them as OSM objects.
@@ -8,7 +10,7 @@ Load GeoParquet files from your local filesystem or directly from an HTTP(S) obj
 
 **Version 0.3 — Public cross-plugin import API added; core 0.2 workflows were functionally validated in JOSM.**
 
-The plugin has been built, installed, and exercised in JOSM by the project maintainer. Confirmed workflows include:
+The plugin has been built, installed, and exercised in JOSM. Confirmed workflows include:
 
 - Opening and displaying local GeoParquet datasets.
 - Displaying Overture Maps transportation geometries alongside OSM data.
@@ -16,7 +18,9 @@ The plugin has been built, installed, and exercised in JOSM by the project maint
 - Using the current JOSM viewport as the spatial query for remote loading.
 - Configuring geometry-count limits and customizing reference-layer appearance.
 
-These are manual end-to-end validations, **not** a claim of comprehensive automated test coverage, compatibility with every GeoParquet file, or production hardening.
+These manual end-to-end validations complement the automated test suite. Format and
+scale limitations are documented below so users can evaluate whether a dataset fits
+the supported workflows.
 
 ### Cross-plugin API
 
@@ -143,7 +147,8 @@ The `make run` target includes `--enable-preview` and the additional JVM exports
 - `GeoParquetImportService` is the public asynchronous handoff used by other plugins.
 - `GeoParquetSettings`, `GeoParquetDialogs`, and `GeoParquetStyle` handle limits and visual configuration.
 
-The plugin is independent of the JOSM OpenData plugin and may serve as a foundation for future Overture Maps integrations.
+The plugin is independent of the JOSM OpenData plugin and provides the GeoParquet
+loading service used by the JOSM Overture Maps plugin.
 
 See [Architecture](docs/ARCHITECTURE.md), [Development](docs/DEVELOPMENT.md), and [Remote access and styling](docs/REMOTE_AND_STYLING.md).
 

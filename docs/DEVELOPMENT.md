@@ -18,10 +18,17 @@ JDK 25 with preview features, Maven, curl and a locally installed Parquetry snap
 
 ## Compatibility notes
 
-The Maven POM uses a `system`-scoped JOSM JAR solely for local development and shades runtime dependencies into a single plugin JAR. Before release, replace the pinned baseline placeholder with the actual revision used for compilation and validate the `Plugin-Mainversion` manifest value against it.
+The Maven POM uses a `system`-scoped JOSM JAR solely for local development and shades
+runtime dependencies into a single plugin JAR. Release builds validate that the
+manifest version matches the Git tag and publish the plugin JAR with its SHA-256 file.
 
-**Verification required:** build against actual JOSM and Parquetry artifacts, run a manual import test, inspect plugin classloader collisions, and confirm Java 25 preview launch. This repository is a source scaffold, not a certified release.
+Before publishing a release, build and test against the configured JOSM and Parquetry
+artifacts, validate local and remote imports, inspect plugin classloader compatibility,
+and confirm the Java 25 preview launch. Published versions are usable plugins; the
+documented format and scaling limitations still apply.
 
 ## Design constraints
 
-Keep the plugin read-only. Do not add any path that creates editable OSM primitives or makes the layer uploadable. Keep file reads local for the initial milestone.
+Keep the plugin read-only. Do not add any path that creates editable OSM primitives
+or makes the layer uploadable. Remote reads must preserve the existing HTTPS,
+HTTP-Range, viewport-filtering and resource-limit safeguards.
