@@ -90,8 +90,16 @@ carpeta de plugins de JOSM y habilitarlo en sus preferencias. JOSM debe iniciars
 con Java 25 y las funcionalidades preview activadas. No se requieren una cuenta de
 GitHub ni credenciales.
 
-El instalador integral del workspace de la comunidad puede descargar JOSM,
-GeoParquet y Overture Maps juntos manteniendo un perfil aislado.
+Para la instalación autocontenida recomendada, ejecutar el instalador incluido en
+este repositorio. Descarga JOSM y GeoParquet, verifica el checksum de la release y
+usa un perfil aislado:
+
+```bash
+JAVA_HOME=/ruta/al/jdk-25 ./scripts/install-and-run.sh
+```
+
+Consultar la [guía de instalación](docs/INSTALLATION.es.md) o su
+[versión en inglés](docs/INSTALLATION.md).
 
 ## Compilar y ejecutar
 
@@ -137,7 +145,8 @@ Java 25, empaqueta el plugin, valida la versión del manifiesto y publica
 El plugin expone `GeoParquetImportService`, que también utiliza JOSM Overture Maps,
 y mantiene toda la lectura y renderización separada de los objetos OSM editables.
 
-Consultar [Arquitectura](docs/ARCHITECTURE.md),
+Consultar [Instalación](docs/INSTALLATION.es.md),
+[Arquitectura](docs/ARCHITECTURE.md),
 [Desarrollo](docs/DEVELOPMENT.md) y
 [Acceso remoto y estilos](docs/REMOTE_AND_STYLING.md). La documentación técnica se
 mantiene en inglés; este README ofrece la guía de usuario equivalente en español.

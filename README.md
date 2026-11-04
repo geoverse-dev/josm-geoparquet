@@ -91,8 +91,16 @@ Download `geoparquet-0.3.0.jar`, rename it to `geoparquet.jar`, copy it into the
 JOSM plugins directory, enable it in JOSM preferences, and start JOSM with Java 25
 and preview features enabled. No GitHub account or credentials are required.
 
-The complete bundle installer in the community workspace can download JOSM,
-GeoParquet and Overture Maps together and keep their profile isolated.
+For the recommended self-contained setup, run the installer included in this
+repository. It downloads JOSM and GeoParquet, verifies the release checksum and
+uses an isolated profile:
+
+```bash
+JAVA_HOME=/path/to/jdk-25 ./scripts/install-and-run.sh
+```
+
+See [Installation](docs/INSTALLATION.md) or
+[Instalación en español](docs/INSTALLATION.es.md).
 
 ## Build and run
 
@@ -161,7 +169,9 @@ The `make run` target includes `--enable-preview` and the additional JVM exports
 The plugin is independent of the JOSM OpenData plugin and provides the GeoParquet
 loading service used by the JOSM Overture Maps plugin.
 
-See [Architecture](docs/ARCHITECTURE.md), [Development](docs/DEVELOPMENT.md), and [Remote access and styling](docs/REMOTE_AND_STYLING.md).
+See [Installation](docs/INSTALLATION.md), [Architecture](docs/ARCHITECTURE.md),
+[Development](docs/DEVELOPMENT.md), and
+[Remote access and styling](docs/REMOTE_AND_STYLING.md).
 
 ## Roadmap
 
