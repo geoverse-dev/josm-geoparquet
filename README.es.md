@@ -81,6 +81,18 @@ GeoParquet y no sube esas geometrías a OpenStreetMap.
 - Maven 3.9+, Git, curl y make para compilar.
 - JOSM tested y Parquetry `1.0-SNAPSHOT`, preparados por `make bootstrap`.
 
+## Instalar una release publicada
+
+Los JAR se publican en la página pública de
+[GitHub Releases](https://github.com/geoverse-dev/josm-geoparquet/releases).
+Descargar `geoparquet-0.3.0.jar`, renombrarlo como `geoparquet.jar`, copiarlo a la
+carpeta de plugins de JOSM y habilitarlo en sus preferencias. JOSM debe iniciarse
+con Java 25 y las funcionalidades preview activadas. No se requieren una cuenta de
+GitHub ni credenciales.
+
+El instalador integral del workspace de la comunidad puede descargar JOSM,
+GeoParquet y Overture Maps juntos manteniendo un perfil aislado.
+
 ## Compilar y ejecutar
 
 ```bash

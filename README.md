@@ -83,6 +83,17 @@ GeoParquet content is displayed as a **reference layer**, not as an `OsmDataLaye
 - JOSM tested JAR (downloaded by the bootstrap target).
 - Parquetry `1.0-SNAPSHOT` (built locally by the bootstrap target).
 
+## Install a published release
+
+Published JARs are available from the public
+[GitHub Releases page](https://github.com/geoverse-dev/josm-geoparquet/releases).
+Download `geoparquet-0.3.0.jar`, rename it to `geoparquet.jar`, copy it into the
+JOSM plugins directory, enable it in JOSM preferences, and start JOSM with Java 25
+and preview features enabled. No GitHub account or credentials are required.
+
+The complete bundle installer in the community workspace can download JOSM,
+GeoParquet and Overture Maps together and keep their profile isolated.
+
 ## Build and run
 
 ```bash
