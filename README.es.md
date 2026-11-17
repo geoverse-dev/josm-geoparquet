@@ -10,6 +10,29 @@ HTTP(S), incluidos buckets S3 públicos o almacenamiento compatible. Las geometr
 se muestran junto a los datos editables de OpenStreetMap, pero no se convierten en
 objetos OSM.
 
+<p align="center">
+  <a href="docs/images/geoparquet-reference-layer.webp">
+    <img src="docs/images/geoparquet-reference-layer.webp" alt="Archivo local de caminos GeoParquet cargado como capa de referencia de solo lectura en JOSM" width="100%">
+  </a>
+</p>
+
+<p align="center"><em>Un dataset GeoParquet local cargado directamente en una capa de referencia propia de JOSM.</em></p>
+
+## La base de JOSM Overture Maps
+
+[JOSM Overture Maps](https://github.com/overturemaps-ar-community/josm-overturemaps)
+depende de este plugin y declara `Plugin-Requires: geoparquet`. Overture Maps se
+ocupa del descubrimiento del catálogo STAC y la selección de assets; GeoParquet
+provee el acceso a datos que permite utilizarlos en JOSM:
+
+- acceso HTTP Range a objetos GeoParquet remotos;
+- filtrado espacial según el viewport y decodificación de geometrías;
+- creación y renderizado de capas de referencia de solo lectura;
+- progreso de carga, cancelación, límites y estilos por capa.
+
+GeoParquet debe instalarse y habilitarse antes que Overture Maps. El instalador
+autocontenido de Overture Maps configura automáticamente esta dependencia.
+
 ## Estado
 
 **Versión 0.3 — API pública de importación entre plugins y flujos locales/remotos
