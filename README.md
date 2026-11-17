@@ -14,20 +14,19 @@ Load GeoParquet files from your local filesystem or directly from an HTTP(S) obj
 
 <p align="center"><em>A local GeoParquet dataset loaded directly into a dedicated JOSM reference layer.</em></p>
 
-## The foundation for JOSM Overture Maps
+## Standalone plugin, reusable GeoParquet service
+
+GeoParquet is useful on its own for opening local files or remote HTTP(S) objects
+as read-only reference layers in JOSM. It also exposes its loading pipeline as a
+small public API so other plugins can reuse GeoParquet support without duplicating
+HTTP Range access, spatial filtering, geometry decoding or rendering.
 
 [JOSM Overture Maps](https://github.com/overturemaps-ar-community/josm-overturemaps)
-depends on this plugin and declares `Plugin-Requires: geoparquet`. Overture Maps
-handles STAC catalog discovery and asset selection; GeoParquet provides the data
-path that makes those assets usable in JOSM:
-
-- HTTP Range access to remote GeoParquet objects;
-- viewport-aware spatial filtering and geometry decoding;
-- read-only reference-layer creation and rendering;
-- loading progress, cancellation, limits and per-layer styling.
-
-Install and enable GeoParquet before Overture Maps. The Overture Maps
-self-contained installer performs this dependency setup automatically.
+is one concrete example of that reuse. It handles STAC catalog discovery and asset
+selection, then delegates GeoParquet loading and reference-layer creation to this
+plugin. For that integration, Overture Maps declares `Plugin-Requires: geoparquet`
+and requires GeoParquet to be installed and enabled first; its self-contained
+installer configures the dependency automatically.
 
 ## Status
 

@@ -18,20 +18,20 @@ objetos OSM.
 
 <p align="center"><em>Un dataset GeoParquet local cargado directamente en una capa de referencia propia de JOSM.</em></p>
 
-## La base de JOSM Overture Maps
+## Plugin autónomo y servicio GeoParquet reutilizable
+
+GeoParquet tiene valor por sí mismo para abrir archivos locales u objetos HTTP(S)
+remotos como capas de referencia de solo lectura en JOSM. Además, expone su flujo
+de carga mediante una API pública pequeña para que otros plugins reutilicen el
+soporte GeoParquet sin duplicar acceso HTTP Range, filtrado espacial, decodificación
+de geometrías ni renderizado.
 
 [JOSM Overture Maps](https://github.com/overturemaps-ar-community/josm-overturemaps)
-depende de este plugin y declara `Plugin-Requires: geoparquet`. Overture Maps se
-ocupa del descubrimiento del catálogo STAC y la selección de assets; GeoParquet
-provee el acceso a datos que permite utilizarlos en JOSM:
-
-- acceso HTTP Range a objetos GeoParquet remotos;
-- filtrado espacial según el viewport y decodificación de geometrías;
-- creación y renderizado de capas de referencia de solo lectura;
-- progreso de carga, cancelación, límites y estilos por capa.
-
-GeoParquet debe instalarse y habilitarse antes que Overture Maps. El instalador
-autocontenido de Overture Maps configura automáticamente esta dependencia.
+es un ejemplo concreto de esa reutilización. Se ocupa del descubrimiento del
+catálogo STAC y la selección de assets, y luego delega en este plugin la carga
+GeoParquet y la creación de capas de referencia. Para esa integración, Overture
+Maps declara `Plugin-Requires: geoparquet` y requiere que GeoParquet esté instalado
+y habilitado; su instalador autocontenido configura la dependencia automáticamente.
 
 ## Estado
 
